@@ -37,4 +37,8 @@ class UsersAdapter(var context: Context, var userList: ArrayList<Users>) : Recyc
             context.startActivities(arrayOf(intent))
         }
     }
+
+    fun getUserId(position: Int): String {
+        return userList[position].userId
+    }
 }

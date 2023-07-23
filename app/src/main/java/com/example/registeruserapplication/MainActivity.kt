@@ -2,14 +2,16 @@ package com.example.registeruserapplication
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.registeruserapplication.databinding.ActivityMainBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ktx.Firebase
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +34,28 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val userId = usersAdapter.getUserId(viewHolder.adapterPosition)
+                dbRef.child(userId).removeValue()
+
+                Toast.makeText(applicationContext, "The user was deleted", Toast.LENGTH_SHORT).show()
+            }
+
+        }).attachToRecyclerView(mainBinding.recycleView)
+
         retrieveDataFromDb()
+
     }
 
     fun retrieveDataFromDb() {
