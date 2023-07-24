@@ -1,8 +1,12 @@
 package com.example.registeruserapplication
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -84,5 +88,39 @@ class MainActivity : AppCompatActivity() {
                 TODO("Not yet implemented")
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.deleteAllUsers) {
+            showDialogMessge()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    fun showDialogMessge() {
+        val dialogMessage = AlertDialog.Builder(this)
+        dialogMessage.setTitle("Delete All Users")
+        dialogMessage.setMessage("If click Yes, all users will delete," + "If you want to delete a specific user, you can swipe the item you want to delete right or left")
+        dialogMessage.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->
+            dialogInterface.cancel()
+        })
+
+        dialogMessage.setPositiveButton("Yes", DialogInterface.OnClickListener { dialogInterface, i ->
+            dbRef.removeValue().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    usersAdapter.notifyDataSetChanged()
+
+                    Toast.makeText(applicationContext, "All users were deleted", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+
+        dialogMessage.create().show()
     }
 }
