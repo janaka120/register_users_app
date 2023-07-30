@@ -52,6 +52,8 @@ class UsersAdapter(var context: Context, var userList: ArrayList<Users>) : Recyc
             intent.putExtra("name", userList[position].userName)
             intent.putExtra("age", userList[position].userAge)
             intent.putExtra("email", userList[position].userEmail)
+            intent.putExtra("url", userList[position].url)
+            intent.putExtra("imageName", userList[position].imageName)
 
             context.startActivities(arrayOf(intent))
         }

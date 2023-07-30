@@ -58,7 +58,6 @@ class UserActivity : AppCompatActivity() {
                 android.Manifest.permission.READ_MEDIA_IMAGES
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            println("Error >>>>>>>")
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(android.Manifest.permission.READ_MEDIA_IMAGES, android.Manifest.permission.READ_MEDIA_IMAGES),
@@ -112,14 +111,14 @@ class UserActivity : AppCompatActivity() {
             })
     }
 
-    private fun addUserToDb(url: String) {
+    private fun addUserToDb(url: String, imageName: String) {
         val name: String = addUserBinding.editTextName.text.toString()
         val age: Int = addUserBinding.editTextAge.text.toString().toInt()
         val email: String = addUserBinding.editTextEmailAddress.text.toString()
 
         val id = myRef.push().key.toString()
 
-        val user = Users(id, name, age, email, url)
+        val user = Users(id, name, age, email, url, imageName)
 
         myRef.child(id).setValue(user).addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -156,7 +155,7 @@ class UserActivity : AppCompatActivity() {
 
                 myUploadedImageReference.downloadUrl.addOnSuccessListener { url ->
                     val imageURL = url.toString()
-                    addUserToDb(imageURL)
+                    addUserToDb(imageURL, imageName)
                 }
 
             }.addOnFailureListener { it ->
