@@ -32,7 +32,6 @@ class UsersAdapter(var context: Context, var userList: ArrayList<Users>) : Recyc
         holder.adapterBinding.textViewEmail.text = userList[position].userEmail
 
         val imageUrl = userList[position]?.url
-        println("imageUrl >>>"+ imageUrl)
             Picasso.get().load(imageUrl).into(holder.adapterBinding.imageView2, object : Callback{
                 override fun onSuccess() {
                     holder.adapterBinding.progressBar2.visibility = View.INVISIBLE
@@ -61,5 +60,9 @@ class UsersAdapter(var context: Context, var userList: ArrayList<Users>) : Recyc
 
     fun getUserId(position: Int): String {
         return userList[position].userId
+    }
+
+    fun getUserImgName(position: Int): String {
+        return userList[position].imageName
     }
 }

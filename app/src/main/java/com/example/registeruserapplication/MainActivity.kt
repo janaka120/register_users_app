@@ -18,6 +18,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,6 +31,11 @@ class MainActivity : AppCompatActivity() {
 
     val userList = ArrayList<Users>()
     lateinit var usersAdapter: UsersAdapter
+    val firebaseStorage: FirebaseStorage = FirebaseStorage.getInstance()
+
+    val storageReference: StorageReference = firebaseStorage.reference
+
+    val userImgList = ArrayList<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -54,6 +61,12 @@ class MainActivity : AppCompatActivity() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val userId = usersAdapter.getUserId(viewHolder.adapterPosition)
                 dbRef.child(userId).removeValue()
+
+                // delete image
+                val userImageName = usersAdapter.getUserImgName(viewHolder.adapterPosition)
+
+                val imageReference = storageReference.child("images").child(userImageName)
+                imageReference.delete()
 
                 Toast.makeText(applicationContext, "The user was deleted", Toast.LENGTH_SHORT).show()
             }
@@ -119,8 +132,34 @@ class MainActivity : AppCompatActivity() {
         })
 
         dialogMessage.setPositiveButton("Yes", DialogInterface.OnClickListener { dialogInterface, i ->
+
+            dbRef.addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    for (eachuser in snapshot.children) {
+                        val user = eachuser.getValue(Users::class.java)
+                        if(user != null) {
+
+                            userImgList.add(user.imageName)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
+
+
+
             dbRef.removeValue().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+
+                    for (imageName in userImgList) {
+                        val imageReference = storageReference.child("images").child(imageName)
+                        imageReference.delete()
+                    }
+
                     usersAdapter.notifyDataSetChanged()
 
                     Toast.makeText(applicationContext, "All users were deleted", Toast.LENGTH_SHORT).show()
