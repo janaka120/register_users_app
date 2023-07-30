@@ -5,8 +5,12 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.registeruserapplication.databinding.UserItemBinding
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
+import java.lang.Exception
 
 class UsersAdapter(var context: Context, var userList: ArrayList<Users>) : RecyclerView.Adapter<UsersAdapter.UsersViewHolder>() {
 
@@ -26,6 +30,21 @@ class UsersAdapter(var context: Context, var userList: ArrayList<Users>) : Recyc
         holder.adapterBinding.textViewName.text = userList[position].userName
         holder.adapterBinding.textViewAge.text = userList[position].userAge.toString()
         holder.adapterBinding.textViewEmail.text = userList[position].userEmail
+
+        val imageUrl = userList[position]?.url
+        println("imageUrl >>>"+ imageUrl)
+            Picasso.get().load(imageUrl).into(holder.adapterBinding.imageView2, object : Callback{
+                override fun onSuccess() {
+                    holder.adapterBinding.progressBar2.visibility = View.INVISIBLE
+                }
+
+                override fun onError(e: Exception?) {
+                    if (e != null) {
+                        println("image error >>>>" + e.localizedMessage)
+                        Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
 
         holder.adapterBinding.linearLayoutIUser.setOnClickListener {
             val intent = Intent(context, UpdateUserActivity::class.java)
